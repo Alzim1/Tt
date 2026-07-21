@@ -1,0 +1,39 @@
+name: Windows Cloud PC - AnyDesk FIXED
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 360
+
+    steps:
+      - name: Set Execution Policy
+        run: Set-ExecutionPolicy Bypass -Scope Process -Force
+
+      - name: Download AnyDesk
+        run: |
+          Invoke-WebRequest -Uri "https://download.anydesk.com/AnyDesk.exe" -OutFile "AnyDesk.exe"
+
+      - name: Install AnyDesk
+        run: |
+          Start-Process "AnyDesk.exe" -ArgumentList "/install /silent" -Wait
+
+      - name: Start AnyDesk
+        run: |
+          $path1 = "C:\Program Files (x86)\AnyDesk\AnyDesk.exe"
+          $path2 = "C:\Program Files\AnyDesk\AnyDesk.exe"
+
+          if (Test-Path $path1) {
+            Start-Process $path1
+          } elseif (Test-Path $path2) {
+            Start-Process $path2
+          } else {
+            Write-Host "AnyDesk não encontrado!"
+          }
+
+      - name: Keep Alive
+        run: |
+          Write-Host "PC rodando..."
+          Start-Sleep -Seconds 21600
